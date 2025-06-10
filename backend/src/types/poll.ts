@@ -12,7 +12,9 @@ export interface PollState {
     question: string | null;
     options: PollOption[];
     results: Record<string, number>;
-    participants: Record<string, Participant>;
+    participants: { [socketId: string]: { name: string, answered: boolean } };
     isPollActive: boolean;
     duration: number;
+    teacherSocketId: string | null;
+    pollTimer?: NodeJS.Timeout | null;
 } 
