@@ -179,7 +179,13 @@ const StudentPage = () => {
         </div>
       )}
 
-      {hasAnswered && question && <PollResults />}
+      {hasAnswered && question && <>
+        <h3 className="heading3">Previous Question</h3>
+        <PollResults />
+        <div className={styles.spinner}></div>
+        <p>Wait for the teacher to ask questions..</p>
+      </>
+      }
     </div>
   );
 };
