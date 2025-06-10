@@ -1,0 +1,15 @@
+@import "../../../styles/theme.css";
+
+.tag {
+  color: var(--text-color-white);
+  display: flex;
+  width: 134px;
+  height: 31px;
+  padding: 0px 9px;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  border-radius: 24px;
+  background: linear-gradient(90deg, #7565d9 0%, #4d0acd 100%);
+}

@@ -1,0 +1,72 @@
+.pollForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+.textAreaContainer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.questionContainer, 
+.durationContainer {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.questionContainer label, .durationContainer label {
+    font-weight: bold;
+    margin-bottom: -0.5rem; /* Adjust spacing */
+}
+
+.questionInput {
+    resize: none;
+    min-height: 100px;
+}
+
+.charCounter {
+    font-size: 0.8rem;
+    color: var(--text-color-light);
+    margin-top: -1rem;
+}
+.optionsContainer{
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-self: flex-start;
+}
+.optionsHeader {
+    display: flex;
+    font-weight: bold;
+    justify-content: space-between;
+}
+
+.optionItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.optionNumber {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.correctnessToggle {
+    display: flex;
+    gap: 1rem;
+} 
+
+.buttonContainer {
+    width: 100%;
+    /* align-self: flex-end; */
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}

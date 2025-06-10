@@ -1,0 +1,50 @@
+.landingPageContainer {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.landingPageContainer h1 {
+    color: var(--text-color);
+}
+
+.roleSelection {
+    height: 20%;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.roleCard{
+    width: 35%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--background-color);
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.selectedRoleCard {
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 0 10px rgba(74, 85, 235, 0.3);
+}
+.roleCard:hover {
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 0 10px rgba(74, 85, 235, 0.3);
+}

@@ -1,0 +1,39 @@
+:root {
+  --primary-color: #4F0DCE;
+  --primary-color-light: #5767D0;
+  --tertiary-color: #7765DA;
+
+  --border-color: var(--primary-color);
+  --border-radius: 2.125rem;
+
+  --background-color: #F2F2F2;
+  --text-color: #000000;
+  --text-color-white: #FFFFFF;
+
+  --dark-grey: #373737;
+  --light-grey: #6E6E6E;
+  --not-allowed: #e57373;
+  --not-allowed-hover: #ef9a9a;
+}
+
+.heading1 {
+  font-size: 2.5rem;
+  font-weight: 600;
+}
+
+.heading2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.heading3 {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--dark-grey);
+}
+
+.subHeading3 {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--light-grey);
+}
