@@ -9,7 +9,7 @@ interface PollOption {
   isCorrect: boolean;
 }
 
-const PollForm: React.FC = () => {
+const PollForm: React.FC<{ roomId: string | undefined }> = ({ roomId }) => {
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState<PollOption[]>([
     { text: "", isCorrect: false },
@@ -39,7 +39,12 @@ const PollForm: React.FC = () => {
       text: opt.text,
       isCorrect: opt.isCorrect,
     }));
-    socket.emit("create-poll", { question, options: pollOptions, duration });
+    socket.emit("create-poll", {
+      question,
+      options: pollOptions,
+      duration,
+      roomId,
+    });
   };
 
   return (

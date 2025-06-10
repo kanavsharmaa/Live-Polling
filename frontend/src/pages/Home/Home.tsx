@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidV4 } from "uuid";
 import styles from "./Home.module.css";
 import Button from "../../components/ui/Button/Button";
 import Tag from "../../components/ui/Tag/Tag";
@@ -9,8 +10,11 @@ const Home = () => {
   const navigate = useNavigate();
 
   const handleContinue = () => {
-    if (selectedRole) {
-      navigate(`/${selectedRole}`);
+    if (selectedRole === "teacher") {
+      const roomId = uuidV4();
+      navigate(`/teacher/${roomId}`);
+    } else if (selectedRole === "student") {
+      navigate("/student");
     }
   };
 

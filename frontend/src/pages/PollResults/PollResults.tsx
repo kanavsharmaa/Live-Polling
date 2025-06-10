@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { RootState } from "../../redux/store";
 import { useSocket } from "../../hooks/useSocket";
 import { socket } from "../../socket";
@@ -13,10 +13,13 @@ import styles from "./PollResults.module.css";
 const PollResultsPage: React.FC = () => {
   useSocket();
   const dispatch = useDispatch();
+  const { roomId } = useParams<{ roomId: string }>();
   const { isPollClosed } = useSelector((state: RootState) => state.poll);
 
   useEffect(() => {
-    socket.emit("teacher-join");
+    if (roomId) {
+      socket.emit("teacher-join", { roomId });
+    }
     const handlePollClosed = (data: {
       results: Record<string, number>;
       options: any[];
@@ -29,17 +32,17 @@ const PollResultsPage: React.FC = () => {
     return () => {
       socket.off("poll-closed", handlePollClosed);
     };
-  }, [dispatch]);
+  }, [dispatch, roomId]);
 
   return (
     <div className={styles.pollResultsContainer}>
       <div className={styles.poll}>
         <PollResults />
-        <ParticipantsList />
+        <ParticipantsList roomId={roomId} />
       </div>
       {isPollClosed && (
         <div className={styles.newQuestionContainer}>
-          <Link to="/teacher">
+          <Link to={`/teacher/${roomId}`}>
             <Button>+ Ask a new question</Button>
           </Link>
         </div>

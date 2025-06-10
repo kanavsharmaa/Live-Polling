@@ -14,10 +14,13 @@ import Tag from "../../components/ui/Tag/Tag";
 import Button from "../../components/ui/Button/Button";
 import InputBar from "../../components/ui/InputBar/InputBar";
 import PollResults from "../../components/poll/PollResults";
+import { useParams, useNavigate } from "react-router-dom";
 
 const StudentPage = () => {
   useSocket();
   const dispatch = useDispatch();
+  const { roomId } = useParams<{ roomId: string }>();
+  const navigate = useNavigate();
   const {
     name,
     question,
@@ -29,6 +32,7 @@ const StudentPage = () => {
     isKicked,
   } = useSelector((state: RootState) => state.poll);
   const [localName, setLocalName] = useState("");
+  const [localRoomId, setLocalRoomId] = useState("");
   const [timer, setTimer] = useState(duration);
   const totalVotes = results
     ? Object.values(results).reduce((sum, count) => sum + count, 0)
@@ -36,12 +40,12 @@ const StudentPage = () => {
 
   useEffect(() => {
     const savedName = sessionStorage.getItem("studentName");
-    if (savedName) {
+    if (savedName && roomId) {
       setLocalName(savedName);
       dispatch(setName(savedName));
-      socket.emit("join", { name: savedName });
+      socket.emit("join", { name: savedName, roomId });
     }
-  }, [dispatch]);
+  }, [dispatch, roomId]);
 
   useEffect(() => {
     const handlePollClosed = (data: {
@@ -77,17 +81,23 @@ const StudentPage = () => {
 
   const handleNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    sessionStorage.setItem("studentName", localName);
-    dispatch(setName(localName));
-    socket.emit("join", { name: localName });
+    if (localName.trim() && localRoomId.trim()) {
+      sessionStorage.setItem("studentName", localName);
+      dispatch(setName(localName));
+      navigate(`/student/${localRoomId}`);
+    } else if (localName.trim() && roomId) {
+        sessionStorage.setItem("studentName", localName);
+        dispatch(setName(localName));
+        socket.emit("join", { name: localName, roomId });
+    }
   };
 
   const handleAnswerSubmit = (option: string) => {
-    socket.emit("submit-answer", { answer: option });
+    socket.emit("submit-answer", { answer: option, roomId });
     dispatch(setHasAnswered(true));
   };
 
-  if (!name) {
+  if (!roomId || !name) {
     return (
       <div className={styles.studentPageContainer}>
         <Tag name="Intervue Poll" />
@@ -109,6 +119,17 @@ const StudentPage = () => {
               required
             />
           </div>
+          {!roomId && (
+            <div className={styles.inputContainer}>
+              Enter Room ID
+              <InputBar
+                value={localRoomId}
+                onChange={(e) => setLocalRoomId(e.target.value)}
+                placeholder="Room ID"
+                required
+              />
+            </div>
+          )}
           <div className={styles.buttonContainer}>
             <Button type="submit">Continue</Button>
           </div>
