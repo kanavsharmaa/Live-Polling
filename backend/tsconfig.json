@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2017",
     "module": "commonjs",
     "outDir": "./dist",
     "rootDir": "./",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["es2017", "dom"],
+    "types": ["node"]
   },
-  "include": ["./index.ts", "sockets"],
+  "include": ["./index.ts", "sockets", "types"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 } 
