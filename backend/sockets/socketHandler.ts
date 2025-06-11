@@ -1,5 +1,6 @@
 import { Server, Socket } from "socket.io";
 import { PollState, PollOption } from "../types/poll";
+import PollResult from "../models/PollResult";
 
 interface Rooms {
   [roomId: string]: PollState;
@@ -34,6 +35,19 @@ export const handleSocketConnection = (io: Server) => {
       options: room.options,
     });
     room.isPollActive = false;
+    
+    // Save poll results to DB
+    if (room.teacherSocketId && room.question) {
+      const pollToSave = new PollResult({
+        teacherId: room.teacherSocketId,
+        question: room.question,
+        options: room.options.map(option => ({
+          text: option.text,
+          votes: room.results[option.text] || 0
+        }))
+      });
+      pollToSave.save().catch(err => console.error("Error saving poll:", err));
+    }
   };
 
   const resetPoll = (roomId: string) => {
