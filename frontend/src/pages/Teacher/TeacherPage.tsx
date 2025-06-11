@@ -33,13 +33,15 @@ const TeacherPage: React.FC = () => {
         <h3 className="subHeading3">
           Your Room ID is: <strong>{roomId}</strong>
         </h3>
-        <h3 className="subHeading3">
-          Share this ID with your students to have them join the poll.
-        </h3>
-        <h3 className="subHeading3">
-          You'll have the ability to create and manage polls, ask questions, and
-          monitor your students' responses in real-time.
-        </h3>
+        <div className={styles.body}>
+          <h3 className="subHeading3">
+            Share this ID with your students to have them join the poll.
+          </h3>
+          <h3 className="subHeading3">
+            You'll have the ability to create and manage polls, ask questions,
+            and monitor your students' responses in real-time.
+          </h3>
+        </div>
       </div>
       <PollForm roomId={roomId} />
     </div>
