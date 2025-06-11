@@ -81,7 +81,7 @@ export const handleSocketConnection = (io: Server) => {
     socket.on("teacher-join", ({ roomId }: { roomId: string }) => {
       socket.join(roomId);
       const room = getRoom(roomId);
-      room.teacherSocketId = socket.id;
+      room.teacherSocketId = roomId;
       room.participants[socket.id] = { name: "Teacher", answered: false };
       emitParticipants(roomId);
     });
