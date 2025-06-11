@@ -9,6 +9,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["es2017", "dom"],
+    "types": ["node"]
   },
   "include": ["./index.ts", "sockets", "types"],
   "exclude": ["node_modules", "**/*.spec.ts"]
