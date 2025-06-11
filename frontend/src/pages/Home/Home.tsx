@@ -9,10 +9,23 @@ const Home = () => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selectedRole === "teacher") {
-      const roomId = uuidV4();
-      navigate(`/teacher/${roomId}`);
+      try {
+        const response = await fetch(import.meta.env.VITE_BACKEND_URL!);
+        if (response.ok) {
+          const roomId = uuidV4();
+          navigate(`/teacher/${roomId}`);
+        } else {
+          console.error("Failed to ping server.");
+          alert("Server is not ready. Search will start again in a minute. Please try again in a moment.");
+        }
+      } catch (error) {
+        console.error("Error pinging server:", error);
+        alert(
+          "Could not connect to the server. Please check your connection and try again."
+        );
+      }
     } else if (selectedRole === "student") {
       navigate("/student");
     }
