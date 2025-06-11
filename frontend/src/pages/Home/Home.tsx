@@ -27,7 +27,20 @@ const Home = () => {
         );
       }
     } else if (selectedRole === "student") {
-      navigate("/student");
+      try {
+        const response = await fetch(import.meta.env.VITE_BACKEND_URL!);
+        if (response.ok) {
+          navigate("/student");
+        } else {
+          console.error("Failed to ping server.");
+          alert("Server is not ready. Search will start again in a minute. Please try again in a moment.");
+        }
+      } catch (error) {
+        console.error("Error pinging server:", error);
+        alert(
+          "Could not connect to the server. Please check your connection and try again."
+        );
+      }
     }
   };
 
