@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { RootState } from "../../redux/store";
@@ -10,12 +10,14 @@ import PollResults from "../../components/poll/PollResults";
 import Button from "../../components/ui/Button/Button";
 import styles from "./PollResults.module.css";
 import RoomID from "../../components/RoomID/RoomID";
+import PreviousPolls from "../../components/poll/PreviousPolls";
 
 const PollResultsPage: React.FC = () => {
   useSocket();
   const dispatch = useDispatch();
   const { roomId } = useParams<{ roomId: string }>();
   const { isPollClosed } = useSelector((state: RootState) => state.poll);
+  const [showPreviousPolls, setShowPreviousPolls] = useState(false);
 
   useEffect(() => {
     if (roomId) {
@@ -43,14 +45,24 @@ const PollResultsPage: React.FC = () => {
         <ParticipantsList roomId={roomId} />
       </div>
       {isPollClosed && (
-        <div className={styles.newQuestionContainer}>
-          <Link to={`/teacher/${roomId}`}>
-            <Button>+ Ask a new question</Button>
-          </Link>
+        <div className={styles.actionsContainer}>
+          <div className={styles.newQuestionContainer}>
+            <Link to={`/teacher/${roomId}`}>
+              <Button>+ Ask a new question</Button>
+            </Link>
+          </div>
+          <div className={styles.previousPollsButton}>
+            <Button onClick={() => setShowPreviousPolls(!showPreviousPolls)}>
+              {showPreviousPolls
+                ? "Hide Previous Questions"
+                : "View Previous Questions"}
+            </Button>
+          </div>
         </div>
       )}
+      {showPreviousPolls && <PreviousPolls />}
     </div>
   );
 };
 
-export default PollResultsPage;
+export default PollResultsPage; 
