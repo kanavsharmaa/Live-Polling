@@ -107,3 +107,11 @@
 .answerTable tr:hover {
   background-color: #f5f5f5;
 }
+
+.answerResult {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+}

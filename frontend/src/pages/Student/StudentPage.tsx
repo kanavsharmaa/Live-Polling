@@ -6,6 +6,7 @@ import {
   setName,
   setHasAnswered,
   setPollClosed,
+  setStudentAnswer,
 } from "../../redux/slices/pollSlice";
 import styles from "./StudentPage.module.css";
 import pollResultsStyles from "../../components/poll/PollResults.module.css";
@@ -30,6 +31,7 @@ const StudentPage = () => {
     isConnected,
     duration,
     isKicked,
+    studentAnswer,
   } = useSelector((state: RootState) => state.poll);
   const [localName, setLocalName] = useState("");
   const [localRoomId, setLocalRoomId] = useState("");
@@ -95,6 +97,7 @@ const StudentPage = () => {
   const handleAnswerSubmit = (option: string) => {
     socket.emit("submit-answer", { answer: option, roomId });
     dispatch(setHasAnswered(true));
+    dispatch(setStudentAnswer(option));
   };
 
   if (!roomId || !name) {
@@ -200,13 +203,24 @@ const StudentPage = () => {
         </div>
       )}
 
-      {hasAnswered && question && <>
-        <h3 className="heading3">Previous Question</h3>
-        <PollResults />
-        <div className={styles.spinner}></div>
-        <p>Wait for the teacher to ask questions..</p>
-      </>
-      }
+      {hasAnswered && question && (
+        <>
+          <h3 className="heading3">Previous Question</h3>
+          <PollResults />
+          {studentAnswer && (
+            <div className={styles.answerResult}>
+              <p>You answered: {studentAnswer}</p>
+              <p>
+                {options.find((o) => o.text === studentAnswer)?.isCorrect
+                  ? "Your answer is correct!"
+                  : "Your answer is incorrect."}
+              </p>
+            </div>
+          )}
+          <div className={styles.spinner}></div>
+          <p>Wait for the teacher to ask questions..</p>
+        </>
+      )}
     </div>
   );
 };

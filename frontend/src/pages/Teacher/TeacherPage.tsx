@@ -5,6 +5,7 @@ import { socket } from "../../socket";
 import PollForm from "../../components/poll/PollForm";
 import styles from "./TeacherPage.module.css";
 import Tag from "../../components/ui/Tag/Tag";
+import RoomID from "../../components/RoomID/RoomID";
 
 const TeacherPage: React.FC = () => {
   useSocket();
@@ -30,9 +31,7 @@ const TeacherPage: React.FC = () => {
       <Tag name="Intervue Poll" />
       <div className={styles.header}>
         <h1 className="heading1">Welcome, Teacher!</h1>
-        <h3 className="subHeading3">
-          Your Room ID is: <strong>{roomId}</strong>
-        </h3>
+        <RoomID roomId={roomId} />
         <div className={styles.body}>
           <h3 className="subHeading3">
             Share this ID with your students to have them join the poll.

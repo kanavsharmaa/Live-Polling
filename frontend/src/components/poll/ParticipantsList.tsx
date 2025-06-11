@@ -16,11 +16,11 @@ const ParticipantsList: React.FC<{ roomId: string | undefined }> = ({ roomId }) 
 
     return (
         <div className={styles.participantsSidebar}>
-            <h2>Participants ({studentParticipants.length})</h2>
+            <h2 className="heading2">Participants ({studentParticipants.length})</h2>
             <ul>
                 {studentParticipants.map(([id, participant]) => (
                     <li key={id}>
-                        <span>{participant.name} {participant.answered ? '✓' : ''}</span>
+                        <span>{participant.name} {participant.answered ? '✓' : '(Joined Late, will answer the next question)'}</span>
                         <Button variant="danger" onClick={() => handleKickStudent(id)}>Kick</Button>
                     </li>
                 ))}

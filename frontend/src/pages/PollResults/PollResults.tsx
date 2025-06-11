@@ -9,6 +9,7 @@ import ParticipantsList from "../../components/poll/ParticipantsList";
 import PollResults from "../../components/poll/PollResults";
 import Button from "../../components/ui/Button/Button";
 import styles from "./PollResults.module.css";
+import RoomID from "../../components/RoomID/RoomID";
 
 const PollResultsPage: React.FC = () => {
   useSocket();
@@ -36,6 +37,7 @@ const PollResultsPage: React.FC = () => {
 
   return (
     <div className={styles.pollResultsContainer}>
+      <RoomID roomId={roomId} />
       <div className={styles.poll}>
         <PollResults />
         <ParticipantsList roomId={roomId} />

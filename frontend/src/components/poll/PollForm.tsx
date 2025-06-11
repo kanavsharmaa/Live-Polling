@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 import { socket } from "../../socket";
 import Button from "../ui/Button/Button";
 import styles from "./PollForm.module.css";
 import InputBar from "../ui/InputBar/InputBar";
+import ParticipantsList from "./ParticipantsList";
 
 interface PollOption {
   text: string;
@@ -16,17 +19,27 @@ const PollForm: React.FC<{ roomId: string | undefined }> = ({ roomId }) => {
     { text: "", isCorrect: false },
   ]);
   const [duration, setDuration] = useState(60);
+  const [error, setError] = useState<string | null>(null);
+
+  const { participants } = useSelector((state: RootState) => state.poll);
+  const studentParticipants = Object.entries(participants).filter(
+    ([, p]) => p.name !== "Teacher"
+  );
 
   const handleOptionChange = (index: number, text: string) => {
     const newOptions = [...options];
     newOptions[index].text = text;
     setOptions(newOptions);
+    setError(null);
   };
 
-  const handleCorrectnessChange = (index: number, isCorrect: boolean) => {
-    const newOptions = [...options];
-    newOptions[index].isCorrect = isCorrect;
+  const handleCorrectnessChange = (selectedIndex: number) => {
+    const newOptions = options.map((option, index) => ({
+      ...option,
+      isCorrect: index === selectedIndex,
+    }));
     setOptions(newOptions);
+    setError(null);
   };
 
   const addOption = () => {
@@ -35,6 +48,29 @@ const PollForm: React.FC<{ roomId: string | undefined }> = ({ roomId }) => {
 
   const handleCreatePoll = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (studentParticipants.length === 0) {
+      setError("There are no participants to create poll.");
+      return;
+    }
+
+    if (question.trim() === "") {
+      setError("Question cannot be empty.");
+      return;
+    }
+
+    if (options.some((opt) => opt.text.trim() === "")) {
+      setError("All options must be filled.");
+      return;
+    }
+
+    if (!options.some((opt) => opt.isCorrect)) {
+      setError("Please mark one option as correct.");
+      return;
+    }
+
+    setError(null);
+
     const pollOptions = options.map((opt) => ({
       text: opt.text,
       isCorrect: opt.isCorrect,
@@ -49,16 +85,20 @@ const PollForm: React.FC<{ roomId: string | undefined }> = ({ roomId }) => {
 
   return (
     <form onSubmit={handleCreatePoll} className={styles.pollForm}>
+      {error && <div className={styles.error}>{error}</div>}
       <div className={styles.textAreaContainer}>
         <div className={styles.questionContainer}>
-          <label htmlFor="question">
+          <label htmlFor="question" className="heading2">
             Enter your question ({question.length}/100)
           </label>
           <InputBar
             id="question"
             type="textarea"
             value={question}
-            onChange={(e) => setQuestion(e.target.value)}
+            onChange={(e) => {
+              setQuestion(e.target.value);
+              setError(null);
+            }}
             placeholder="What is the capital of France?"
             maxLength={100}
             className={styles.questionInput}
@@ -66,57 +106,60 @@ const PollForm: React.FC<{ roomId: string | undefined }> = ({ roomId }) => {
         </div>
 
         <div className={styles.durationContainer}>
-          <label htmlFor="duration">Poll Duration (seconds)</label>
+          <label htmlFor="duration" className="heading2">
+            Poll Duration (seconds)
+          </label>
           <InputBar
             id="duration"
             type="number"
             value={duration}
-            onChange={(e) => setDuration(parseInt(e.target.value, 10))}
+            onChange={(e) => {
+              setDuration(parseInt(e.target.value, 10));
+              setError(null);
+            }}
             min="10"
             max="300"
           />
         </div>
       </div>
 
-      <div className={styles.optionsContainer}>
-        <div className={styles.optionsHeader}>
-          <span>Edit Options</span>
-          <span>Is it Correct?</span>
-        </div>
-
-        {options.map((option, index) => (
-          <div key={index} className={styles.optionItem}>
-            <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-              <span className={styles.optionNumber}>{index + 1}</span>
-              <InputBar
-                type="text"
-                value={option.text}
-                onChange={(e) => handleOptionChange(index, e.target.value)}
-                placeholder={`Option ${index + 1}`}
-              />
-            </div>
-            <div className={styles.correctnessToggle}>
-              <label>
-                <input
-                  type="radio"
-                  name={`correct-option-${index}`}
-                  checked={option.isCorrect === true}
-                  onChange={() => handleCorrectnessChange(index, true)}
-                />{" "}
-                Yes
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name={`correct-option-${index}`}
-                  checked={option.isCorrect === false}
-                  onChange={() => handleCorrectnessChange(index, false)}
-                />{" "}
-                No
-              </label>
-            </div>
+      <div className={styles.body}>
+        <div className={styles.optionsContainer}>
+          <div className={styles.optionsHeader}>
+            <h2 className="heading2">Edit Options</h2>
+            <h2 className="heading2">Is it Correct?</h2>
           </div>
-        ))}
+
+          {options.map((option, index) => (
+            <div key={index} className={styles.optionItem}>
+              <div
+                style={{ display: "flex", gap: "1rem", alignItems: "center" }}
+              >
+                <span className={styles.optionNumber}>{index + 1}</span>
+                <InputBar
+                  type="text"
+                  value={option.text}
+                  onChange={(e) => handleOptionChange(index, e.target.value)}
+                  placeholder={`Option ${index + 1}`}
+                />
+              </div>
+              <div className={styles.correctnessToggle}>
+                <input
+                  type="radio"
+                  name="correct-option"
+                  checked={option.isCorrect}
+                  onChange={() => {
+                    handleCorrectnessChange(index);
+                    setError(null);
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className={styles.participantsListContainer}>
+          <ParticipantsList roomId={roomId} />
+        </div>
       </div>
 
       <div className={styles.buttonContainer}>
@@ -124,7 +167,23 @@ const PollForm: React.FC<{ roomId: string | undefined }> = ({ roomId }) => {
           + Add More option
         </Button>
 
-        <Button type="submit">Ask Question</Button>
+        <Button
+          type="submit"
+          variant={
+            error ||
+            options.length === 0 ||
+            studentParticipants.length === 0
+              ? "danger"
+              : "primary"
+          }
+          disabled={
+            !!error ||
+            options.length === 0 ||
+            studentParticipants.length === 0
+          }
+        >
+          Ask Question
+        </Button>
       </div>
     </form>
   );
