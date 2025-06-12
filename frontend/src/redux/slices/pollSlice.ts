@@ -17,6 +17,7 @@ interface PollState {
   duration: number;
   isKicked: boolean;
   studentAnswer: string | null;
+  teacherDisconnected: boolean;
 }
 
 const initialState: PollState = {
@@ -31,6 +32,7 @@ const initialState: PollState = {
   duration: 60,
   isKicked: false,
   studentAnswer: null,
+  teacherDisconnected: false,
 };
 
 export const pollSlice = createSlice({
@@ -39,6 +41,9 @@ export const pollSlice = createSlice({
   reducers: {
     setConnectionState: (state, action: PayloadAction<boolean>) => {
       state.isConnected = action.payload;
+    },
+    setTeacherDisconnected: (state, action: PayloadAction<boolean>) => {
+      state.teacherDisconnected = action.payload;
     },
     setKicked: (state, action: PayloadAction<boolean>) => {
         state.isKicked = action.payload;
@@ -77,6 +82,6 @@ export const pollSlice = createSlice({
   },
 });
 
-export const { setConnectionState, setName, setPoll, setResults, setHasAnswered, setPollClosed, setParticipants, setKicked, setStudentAnswer } = pollSlice.actions;
+export const { setConnectionState, setName, setPoll, setResults, setHasAnswered, setPollClosed, setParticipants, setKicked, setStudentAnswer, setTeacherDisconnected } = pollSlice.actions;
 
 export default pollSlice.reducer; 

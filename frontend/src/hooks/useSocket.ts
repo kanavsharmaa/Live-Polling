@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { socket } from '../socket';
-import { setConnectionState, setPoll, setResults, setParticipants, setKicked } from '../redux/slices/pollSlice';
+import { setConnectionState, setPoll, setResults, setParticipants, setKicked, setTeacherDisconnected } from '../redux/slices/pollSlice';
 import { AppDispatch } from '../redux/store';
 import { Socket } from 'socket.io-client';
 
@@ -36,11 +36,16 @@ export const useSocket = () => {
       dispatch(setParticipants(value));
     }
 
+    function onTeacherDisconnected() {
+      dispatch(setTeacherDisconnected(true));
+    }
+
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('new-question', onNewQuestion);
     socket.on('poll-results', onPollResults);
     socket.on('participants-list', onParticipantsList);
+    socket.on('teacher-disconnected', onTeacherDisconnected);
 
     socket.connect();
 
@@ -50,7 +55,7 @@ export const useSocket = () => {
       socket.off('new-question', onNewQuestion);
       socket.off('poll-results', onPollResults);
       socket.off('participants-list', onParticipantsList);
-      socket.disconnect();
+      socket.off('teacher-disconnected', onTeacherDisconnected);
     };
   }, [dispatch]);
 }; 

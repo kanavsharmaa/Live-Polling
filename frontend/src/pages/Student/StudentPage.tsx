@@ -32,6 +32,7 @@ const StudentPage = () => {
     duration,
     isKicked,
     studentAnswer,
+    teacherDisconnected,
   } = useSelector((state: RootState) => state.poll);
   const [localName, setLocalName] = useState("");
   const [localRoomId, setLocalRoomId] = useState("");
@@ -88,9 +89,9 @@ const StudentPage = () => {
       dispatch(setName(localName));
       navigate(`/student/${localRoomId}`);
     } else if (localName.trim() && roomId) {
-        sessionStorage.setItem("studentName", localName);
-        dispatch(setName(localName));
-        socket.emit("join", { name: localName, roomId });
+      sessionStorage.setItem("studentName", localName);
+      dispatch(setName(localName));
+      socket.emit("join", { name: localName, roomId });
     }
   };
 
@@ -99,6 +100,10 @@ const StudentPage = () => {
     dispatch(setHasAnswered(true));
     dispatch(setStudentAnswer(option));
   };
+
+  useEffect(() => {
+    console.log("teacherDisconnected: ", teacherDisconnected);
+  }, [teacherDisconnected]);
 
   if (!roomId || !name) {
     return (
@@ -142,6 +147,19 @@ const StudentPage = () => {
   }
 
   if (!question) {
+    if (teacherDisconnected) {
+      return (
+        <div className={styles.kickedOutContainer}>
+          <Tag name="Intervue Poll" />
+          <div className={styles.kickedOutContent}>
+            <h1 className="heading1">The teacher has left the session.</h1>
+            <h3 className="subHeading3">
+              The poll has ended. You can close this window.
+            </h3>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className={styles.waitingContainer}>
         <Tag name="Intervue Poll" />
@@ -160,6 +178,20 @@ const StudentPage = () => {
           <h3 className="subHeading3">
             Looks like the teacher had removed you from the poll system. Please
             Try again sometime.
+          </h3>
+        </div>
+      </div>
+    );
+  }
+
+  if (teacherDisconnected) {
+    return (
+      <div className={styles.kickedOutContainer}>
+        <Tag name="Intervue Poll" />
+        <div className={styles.kickedOutContent}>
+          <h1 className="heading1">The teacher has left the session.</h1>
+          <h3 className="subHeading3">
+            The poll has ended. You can close this window.
           </h3>
         </div>
       </div>

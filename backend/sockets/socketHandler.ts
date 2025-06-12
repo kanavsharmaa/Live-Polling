@@ -19,6 +19,7 @@ export const handleSocketConnection = (io: Server) => {
         isPollActive: false,
         duration: 60,
         teacherSocketId: null,
+        teacherId: null,
       };
     }
     return rooms[roomId];
@@ -37,9 +38,9 @@ export const handleSocketConnection = (io: Server) => {
     room.isPollActive = false;
     
     // Save poll results to DB
-    if (room.teacherSocketId && room.question) {
+    if (room.teacherId && room.question) {
       const pollToSave = new PollResult({
-        teacherId: room.teacherSocketId,
+        teacherId: room.teacherId,
         question: room.question,
         options: room.options.map(option => ({
           text: option.text,
@@ -81,8 +82,10 @@ export const handleSocketConnection = (io: Server) => {
     socket.on("teacher-join", ({ roomId }: { roomId: string }) => {
       socket.join(roomId);
       const room = getRoom(roomId);
-      room.teacherSocketId = roomId;
+      room.teacherSocketId = socket.id;
+      room.teacherId = roomId;
       room.participants[socket.id] = { name: "Teacher", answered: false };
+      socket.data.roomId = roomId;
       emitParticipants(roomId);
     });
 
@@ -90,6 +93,7 @@ export const handleSocketConnection = (io: Server) => {
       socket.join(roomId);
       const room = getRoom(roomId);
       room.participants[socket.id] = { name, answered: false };
+      socket.data.roomId = roomId;
       emitParticipants(roomId);
 
       if (room.question) {
@@ -195,22 +199,33 @@ export const handleSocketConnection = (io: Server) => {
 
     socket.on("disconnect", () => {
       console.log("user disconnected:", socket.id);
-      for (const roomId in rooms) {
-        const room = rooms[roomId];
-        if (room.participants[socket.id]) {
-          delete room.participants[socket.id];
-          emitParticipants(roomId);
+      const { roomId } = socket.data;
 
-          if (room.isPollActive) {
-            const studentParticipants = Object.values(
-              room.participants
-            ).filter((p) => p.name !== "Teacher");
-            if (
-              studentParticipants.length === 0 ||
-              studentParticipants.every((p) => p.answered)
-            ) {
-              closePoll(roomId);
-            }
+      if (!roomId) {
+        return;
+      }
+      
+      const room = getRoom(roomId);
+
+      if (socket.id === room.teacherSocketId) {
+        io.to(roomId).emit("teacher-disconnected");
+        delete rooms[roomId];
+        return;
+      }
+      
+      if (room.participants[socket.id]) {
+        delete room.participants[socket.id];
+        emitParticipants(roomId);
+
+        if (room.isPollActive) {
+          const studentParticipants = Object.values(
+            room.participants
+          ).filter((p) => p.name !== "Teacher");
+          if (
+            studentParticipants.length === 0 ||
+            studentParticipants.every((p) => p.answered)
+          ) {
+            closePoll(roomId);
           }
         }
       }

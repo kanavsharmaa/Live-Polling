@@ -20,7 +20,7 @@ const ParticipantsList: React.FC<{ roomId: string | undefined }> = ({ roomId }) 
             <ul>
                 {studentParticipants.map(([id, participant]) => (
                     <li key={id}>
-                        <span>{participant.name} {participant.answered ? '✓' : '(Joined Late, will answer the next question)'}</span>
+                        <span>{participant.name} {participant.answered ? '✓' : ''}</span>
                         <Button variant="danger" onClick={() => handleKickStudent(id)}>Kick</Button>
                     </li>
                 ))}
